@@ -13,7 +13,6 @@ public class AriaBehaviour : MonoBehaviour
     protected class EnumerableRange : IEnumerable<int>
     {
         private int _start, _end, _step;
-        private bool _debugmode = false;
 
         public EnumerableRange(int start, int end, int step)
         {
@@ -46,7 +45,6 @@ public class AriaBehaviour : MonoBehaviour
     protected class RangeEnumerator : IEnumerator<int>
     {
         private int _start, _end, _step;
-        private bool _debugmode = false;
 
         public RangeEnumerator(int start, int end, int step)
         {
