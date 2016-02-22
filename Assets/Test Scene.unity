@@ -654,9 +654,11 @@ MonoBehaviour:
   acceleration: 2.5
   currentSpeed: 0
   moveThreshold: 1
+  moveInputThreshold: 66
+  jumpStrength: 300
+  jumpInputThreshold: 200
   maxTargetPlayerPositionOffset: 5
   cameraOffset: {x: 0, y: 1.5, z: -5}
-  touchInputThreshold: 5
 --- !u!4 &1757713291
 Transform:
   m_ObjectHideFlags: 0

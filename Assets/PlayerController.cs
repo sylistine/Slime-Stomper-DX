@@ -11,7 +11,11 @@ public class PlayerController : AriaBehaviour
     public float maxSpeed;
     public float acceleration;
     public float currentSpeed;
+
     public float moveThreshold;
+    public float moveInputThreshold;
+    public float jumpStrength;
+    public float jumpInputThreshold;
 
     public float maxTargetPlayerPositionOffset;
     private Vector3 targetPlayerPos;
@@ -21,9 +25,7 @@ public class PlayerController : AriaBehaviour
     private Vector3 currentCameraVelocity;
     private bool moving;
 
-    public float touchInputThreshold;
-
-	void Start ()
+    void Start ()
     {
         if (cam == null)
         {
@@ -40,21 +42,46 @@ public class PlayerController : AriaBehaviour
         cam.transform.position = targetCameraPos;
     }
 
-	void Update ()
+    Touch t;
+    Vector2 tPosOrigin;
+    void Update ()
     {
         targetPlayerPos.y = rb.position.y;
         targetPlayerPos.z = rb.position.z;
 
+        bool jumpStart = false;
         if (Input.GetButton("Horizontal"))
         {
             targetPlayerPos.x += Input.GetAxisRaw("Horizontal") * offsetMoveSpeed * Time.deltaTime;
         }
         if (Input.touchCount > 0)
         {
-            Touch t = Input.GetTouch(0);
-            targetPlayerPos.x -= t.deltaPosition.x * 0.01f * offsetMoveSpeed;
+            t = Input.GetTouch(0);
+
+            // Grab the original touch position so we can measure sensitivity.
+            if (Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                tPosOrigin = t.position;
+            }
+            // If the threashold is crossed, start handling left and right movement.
+            float inputFullXDelta = tPosOrigin.x - t.position.x;
+            if (Mathf.Abs(inputFullXDelta) > moveInputThreshold)
+            {
+                targetPlayerPos.x -= t.deltaPosition.x * 0.01f * offsetMoveSpeed;
+            }
+            // Test vertical touch delta for jump test.
+            float inputFullYDelta = tPosOrigin.y - t.position.y;
+            if (Input.GetTouch(0).phase == TouchPhase.Ended)
+            {
+                jumpStart = (inputFullYDelta > jumpInputThreshold) ? true : false;
+            }
         }
         
+        if (jumpStart)
+        {
+            rb.AddForce(Vector3.up * jumpStrength);
+        }
+
         Vector3 offsetBefore = targetPlayerPos - rb.position;
 
         // Cap targetPlayerPos.
